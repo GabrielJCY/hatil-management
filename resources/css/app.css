@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    /* 1. Fondo Corporativo (Para el Dashboard administrativo) */
+    .admin-dashboard-bg, .auth-bg {
+        @apply min-h-screen font-sans bg-slate-50;
+        background-image: radial-gradient(#e2e8f0 0.8px, transparent 0.8px);
+        background-size: 24px 24px;
+    }
+
+    /* 2. Tarjeta Premium con Efecto Cristal (Glassmorphism) */
+    .login-card-custom {
+        /* Fondo blanco con 85% de opacidad para que sea más nítido */
+        background: rgba(255, 255, 255, 0.85);
+        /* Desenfoque sutil del fondo (GIF) */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        @apply border border-white/40 shadow-2xl rounded-[2.5rem] transition-all duration-500;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 3. Botones de Gestión (Dashboard) */
+    .btn-gestion {
+        @apply flex items-center justify-between px-6 py-5 bg-white border border-slate-100 
+               rounded-2xl shadow-sm transition-all duration-300 
+               text-slate-600 font-bold uppercase tracking-[0.1em] text-[10px]
+               hover:bg-slate-900 hover:text-white hover:border-slate-900 
+               hover:shadow-xl hover:shadow-slate-200 hover:-translate-y-1 active:scale-[0.98];
+    }
+
+    /* 4. Botón Principal con Hover Interactivo (Estilo Premium) */
+    .btn-premium {
+        @apply w-full flex justify-center items-center py-4 bg-slate-900 
+               text-white font-bold uppercase tracking-[0.2em] text-xs rounded-xl 
+               transition-all duration-300 shadow-lg shadow-slate-200;
+    }
+    
+    .btn-premium:hover {
+        @apply bg-black -translate-y-1 shadow-xl shadow-slate-400;
+        filter: brightness(1.1);
+    }
+
+    .btn-premium:active {
+        @apply scale-[0.97];
+    }
+
+    /* 5. Inputs Modernos con espacio para Íconos */
+    .input-with-icon {
+        @apply block mt-1 w-full border-slate-200 bg-white/70 
+               focus:bg-white focus:border-slate-900 focus:ring-0 
+               rounded-xl py-3.5 pl-12 pr-4 text-sm transition-all duration-300 placeholder:text-slate-300;
+    }
+
+    /* 6. Tablas Administrativas Formales */
+    .tabla-formal {
+        @apply min-w-full border-separate border-spacing-0;
+    }
+
+    .tabla-formal-header {
+        @apply bg-slate-50/50 backdrop-blur-md text-slate-400 text-[10px] font-black 
+               uppercase tracking-[0.2em] px-6 py-5 border-b border-slate-100 text-left;
+    }
+
+    .tabla-formal-row {
+        @apply transition-all duration-200 border-b border-slate-50 hover:bg-slate-50/50;
+    }
+
+    .tabla-formal-cell {
+        @apply px-6 py-5 whitespace-nowrap text-sm text-slate-600 font-medium;
+    }
+
+    /* 7. Login con Fondo GIF (Configuración de Capa Base) */
+    .auth-bg-custom {
+        @apply min-h-screen w-full flex flex-col justify-center items-center relative overflow-hidden bg-slate-900;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        background-attachment: fixed;
+    }
+
+    .auth-content-wrapper {
+        @apply relative z-10 w-full flex flex-col items-center px-6;
+    }
+
+    /* 8. Estilo de los Labels para máxima legibilidad */
+    .label-premium {
+        @apply text-slate-900 font-bold text-xs uppercase tracking-widest ml-1 mb-2;
+    }
+}

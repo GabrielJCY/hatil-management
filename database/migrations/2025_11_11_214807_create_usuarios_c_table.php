@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('UsuariosC', function (Blueprint $table) {
+            
+            $table->bigIncrements('UsuarioC_id'); // Clave Primaria Personalizada
+            
+            $table->string('Nombre', 50)->nullable();
+            $table->string('Apellidos', 50)->nullable();
+            $table->string('Carnet', 20)->nullable();
+            $table->string('Correo', 100)->unique(); 
+            $table->string('Telefono', 20)->nullable();
+            $table->string('Direccion', 100)->nullable();
+            
+            // $table->string('Contrasenia', 100); <--- ¡COLUMNA ELIMINADA!
+
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('UsuariosC');
+    }
+};
