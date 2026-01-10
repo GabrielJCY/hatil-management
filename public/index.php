@@ -24,15 +24,21 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 |
 | En Render gratis no podemos usar la consola para ejecutar migraciones.
 | Esta sección ejecuta automáticamente las migraciones pendientes al
-| iniciar la aplicación, solo recomendable para demos o portafolios.
+| iniciar la aplicación. Solo recomendable para demos o portafolios.
 |
 */
-if (app()->environment('production')) {
+if ($app->environment('production')) {
     try {
+        // Ejecuta migraciones pendientes
         \Artisan::call('migrate', ['--force' => true]);
     } catch (\Exception $e) {
         \Log::error('Error migrando DB: ' . $e->getMessage());
     }
+
+    // Limpiar y regenerar caches de Laravel
+    \Artisan::call('config:cache');
+    \Artisan::call('route:cache');
+    \Artisan::call('view:cache');
 }
 
 // Handle the request and send the response...
