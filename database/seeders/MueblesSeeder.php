@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 use App\Models\Mueble;
 use App\Models\Proveedor;
 use App\Models\Categoria;
-// NOTA: La línea 'use Illuminate\Database\Eloquent\Relations\HasOne;' ha sido eliminada
 
 class MueblesSeeder extends Seeder
 {
@@ -15,7 +14,6 @@ class MueblesSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. OBTENER CLAVES FORÁNEAS NECESARIAS
         $proveedor = Proveedor::first();
         $categoriaSala = Categoria::where('Nombre', 'Salas de Estar')->first();
         $categoriaDormitorio = Categoria::where('Nombre', 'Dormitorios')->first();
@@ -25,7 +23,6 @@ class MueblesSeeder extends Seeder
             return;
         }
 
-        // 2. CREAR EL MUEBLE (Sofá) y su STOCK
         $mueble_sofa = Mueble::create([
             'Nombre' => 'Sofá Lujo Modular',
             'Descripcion' => 'Sofá de diseño moderno con reposacabezas ajustables.',
@@ -39,13 +36,11 @@ class MueblesSeeder extends Seeder
             'Estado' => 'Disponible',
         ]);
         
-        // CRÍTICO: Crea el registro en la tabla Stock
         $mueble_sofa->inventario()->create([
             'Cantidad' => 25, 
         ]);
 
 
-        // 3. CREAR EL MUEBLE (Cama) y su STOCK
         $mueble_cama = Mueble::create([
             'Nombre' => 'Cama Matrimonial Élite',
             'Descripcion' => 'Cama con base de somier integrado y acabados en madera de roble.',
@@ -59,7 +54,6 @@ class MueblesSeeder extends Seeder
             'Estado' => 'Disponible',
         ]);
         
-        // CRÍTICO: Crea el registro en la tabla Stock
         $mueble_cama->inventario()->create([
             'Cantidad' => 40,
         ]);

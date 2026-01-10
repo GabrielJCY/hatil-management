@@ -15,7 +15,6 @@ class PedidosSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. OBTENER DEPENDENCIAS
         $cliente_auth = User::where('rol_type', UsuariosC::class)->first();
         $empleado_auth = User::where('rol_type', UsuarioEmp::class)->first();
 
@@ -34,34 +33,29 @@ class PedidosSeeder extends Seeder
         $precio_sofa = $mueble_sofa->Precio;
         $precio_cama = $mueble_cama->Precio;
         
-        // Calcular el total ANTES de crear el Pedido/Pago
         $subtotal += 1 * $precio_sofa;
         $subtotal += 2 * $precio_cama; 
         
-        // 2. CREAR EL PEDIDO (Tabla Pedidos)
         $pedido = Pedido::create([
             'UsuarioC_id' => $cliente_id, 
             'UsuarioEmp_id' => $empleado_id, 
             'Fecha_pedido' => now(), 
             'Estado' => 'Completado',
-            'Total' => $subtotal, // Usamos el total calculado
+            'Total' => $subtotal, 
             'Metodo_pago' => 'Tarjeta de Crédito',
             'Direccion_envio' => 'Av. Test 123, La Paz',
         ]);
 
-        // 3. REGISTRAR EL PAGO (Tabla Pagos)
-        // *** CORREGIDO: 'Monto' según tu lista de columnas ***
+   
         $pago = Pago::create([
             'Pedido_id' => $pedido->Pedido_id, 
-            'Monto' => $subtotal, // ⬅️ ¡CORREGIDO! Usando 'Monto'
+            'Monto' => $subtotal, 
             'Metodo_pago' => 'Tarjeta de Crédito', 
-            'Fecha_pago' => now(), // Usando 'Fecha_pago' (asumimos minúscula)
-            'Estado' => 'Aprobado', // ⬅️ ¡AGREGADO! Columna 'Estado' en la tabla Pagos, asumimos valor 'Aprobado'.
+            'Fecha_pago' => now(), 
+            'Estado' => 'Aprobado', 
         ]);
         
-        // 4. AÑADIR DETALLES DEL PEDIDO (Tabla Detalle_Pedido)
-        
-        // Detalle 1: Sofá
+       
         Detalle_Pedido::create([
             'Pedido_id' => $pedido->Pedido_id,
             'Pago_id' => $pago->Pago_id, 
@@ -70,10 +64,8 @@ class PedidosSeeder extends Seeder
             'UsuarioC_id' => $cliente_id,   
             'Cantidad' => 1,
             'Precio_Unitario' => $precio_sofa,
-            // 'Subtotal' ELIMINADO
         ]);
 
-        // Detalle 2: Cama
         Detalle_Pedido::create([
             'Pedido_id' => $pedido->Pedido_id,
             'Pago_id' => $pago->Pago_id, 
@@ -82,7 +74,6 @@ class PedidosSeeder extends Seeder
             'UsuarioC_id' => $cliente_id,   
             'Cantidad' => 2,
             'Precio_Unitario' => $precio_cama,
-            // 'Subtotal' ELIMINADO
         ]);
         
         $this->command->info('Pedido de: ' . $pedido->Total . ' creado exitosamente!');

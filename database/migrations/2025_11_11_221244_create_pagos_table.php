@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('Pagos', function (Blueprint $table) {
             $table->bigIncrements('Pago_id');
             
-            // Clave Foránea: Vínculo con el Pedido
             $table->unsignedBigInteger('Pedido_id');
             $table->foreign('Pedido_id')->references('Pedido_id')->on('Pedidos');
 

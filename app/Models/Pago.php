@@ -21,7 +21,7 @@ class Pago extends Model
     protected $fillable = [
         'Pedido_id',
         'Monto',
-        'Metodo_Pago', // Asegúrate de que esta columna sea 'Metodo_Pago' o 'Metodo_pago' en tu BD
+        'Metodo_Pago',
         'Fecha_pago',
         'Estado',
     ];

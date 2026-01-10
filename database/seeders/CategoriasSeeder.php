@@ -7,14 +7,11 @@ use App\Models\Categoria;
 
 class CategoriasSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    
     public function run(): void
     {
-        // 🟢 CORRECCIÓN: Usamos firstOrCreate, buscando por el campo 'nombre'
         Categoria::firstOrCreate(
-            ['nombre' => 'Salas de Estar'], // Condición de búsqueda
+            ['nombre' => 'Salas de Estar'], 
             [
                 'descripcion' => 'Sofás, sillones, mesas de centro y accesorios para el salón.',
             ]
