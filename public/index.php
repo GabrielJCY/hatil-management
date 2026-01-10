@@ -33,3 +33,4 @@ if ($app->environment('production')) {
 
 $response = $app->handle(Request::capture());
 $response->send();
+
