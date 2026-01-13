@@ -1,25 +1,75 @@
-# Usa PHP 8.2 con FPM
-FROM php:8.2-fpm
+# Etapa 1: Builder (dependencias)
+FROM php:8.2-fpm-alpine AS builder
 
-# Instalar extensiones necesarias y herramientas
-RUN apt-get update && apt-get install -y \
-    zip unzip git libpq-dev \
-    && docker-php-ext-install pdo_pgsql
+# Instalar dependencias del sistema + extensiones comunes de Laravel
+RUN apk add --no-cache \
+    git \
+    zip \
+    unzip \
+    curl \
+    libpq-dev \
+    && docker-php-ext-install \
+        pdo_pgsql \
+        pgsql \
+        opcache \
+        pcntl \
+        bcmath \
+    && docker-php-ext-enable opcache
 
-# Instalar Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Instalar composer
+COPY --from=composer:2-alpine /usr/bin/composer /usr/bin/composer
 
-# Directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar todos los archivos del proyecto
+# Primero copiamos solo los archivos necesarios para composer (mejor caché)
+COPY composer.json composer.lock* ./
+
+# Instalamos dependencias (sin scripts ni autoload para no ejecutar nada raro)
+RUN composer install \
+    --prefer-dist \
+    --no-dev \
+    --no-autoloader \
+    --no-scripts \
+    --no-interaction \
+    --optimize-autoloader
+
+# Ahora sí copiamos todo el proyecto
 COPY . .
 
-# Dar permisos de ejecución al script de inicio
-RUN chmod +x start.sh
+# Generamos autoload optimizado y otros assets
+RUN composer dump-autoload --optimize --classmap-authoritative \
+    && php artisan optimize:clear \
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
 
-# Exponer el puerto que Laravel usará
-EXPOSE 10000
+# Etapa 2: Imagen final más liviana
+FROM php:8.2-fpm-alpine
 
-# Comando para iniciar la app
-CMD ["./start.sh"]
+# Dependencias mínimas de runtime
+RUN apk add --no-cache \
+    libpq \
+    && docker-php-ext-install pdo_pgsql opcache
+
+# Copiamos solo lo necesario desde el builder
+COPY --from=builder /var/www/html /var/www/html
+COPY --from=builder /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Mejor seguridad: usuario no-root
+RUN addgroup -g 1000 laravel \
+    && adduser -G laravel -u 1000 -D -s /bin/sh laravel
+
+USER laravel
+
+# Recomendado: exponer puerto solo si realmente usas php-fpm directo (raro)
+# Normalmente se expone el 80/443 del proxy inverso
+# EXPOSE 9000
+
+# Comando de inicio (tu start.sh debería hacer migrate, queue, etc)
+CMD ["php-fpm"]
+
+# Alternativa más común (si usas tu propio start.sh):
+# COPY start.sh /usr/local/bin/start.sh
+# RUN chmod +x /usr/local/bin/start.sh
+# CMD ["/usr/local/bin/start.sh"]
