@@ -1,28 +1,29 @@
-# Usamos PHP 8.2 con FPM
-FROM php:8.2-fpm
+# Usa una imagen optimizada con PHP + Nginx lista para Laravel
+FROM richarvey/nginx-php-fpm:latest
 
-# Instalar dependencias del sistema y extensiones necesarias
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    zip unzip git \
-    && docker-php-ext-install pdo_pgsql
-
-# Instalar Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Copiar el proyecto al contenedor
+# Directorio de trabajo
 WORKDIR /var/www/html
+
+# Copiar archivos del proyecto
 COPY . .
 
-# Instalar dependencias de Laravel
-RUN composer install --no-dev --optimize-autoloader
+# Configuración de entorno base
+ENV APP_ENV=production
+ENV APP_DEBUG=false
+ENV LOG_CHANNEL=stderr
+ENV WEBROOT=/var/www/html/public
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV PHP_ERRORS_STDERR=1
 
-# Generar cache de configuración y rutas
-RUN php artisan config:cache
-RUN php artisan route:cache
+# Instalar dependencias PHP
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Exponer el puerto que Render usará
+# Copiar y dar permisos al script de inicio
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Exponer el puerto 10000 (Render lo usa automáticamente)
 EXPOSE 10000
 
-# Comando para iniciar Laravel
-CMD php artisan serve --host 0.0.0.0 --port 10000
+# Iniciar con el script de arranque
+CMD ["/start.sh"]
